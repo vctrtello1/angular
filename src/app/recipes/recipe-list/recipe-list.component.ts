@@ -10,7 +10,10 @@ import { Recipe } from '../recipe.model';
 export class RecipeListComponent implements OnInit {
 
   recipes =[
-    new Recipe('A recipe', 'This is an exame', 'https://cdn.onemars.net/sites/nutro_es_NkyIN_B9cV/image/gettyimages-605382371_1615921436612.jpeg')
+    new Recipe('A recipe', 'This is an example',
+     'https://cdn.onemars.net/sites/nutro_es_NkyIN_B9cV/image/gettyimages-605382371_1615921436612.jpeg'),
+     new Recipe('A recipe', 'This is an example',
+     'https://cdn.onemars.net/sites/nutro_es_NkyIN_B9cV/image/gettyimages-605382371_1615921436612.jpeg')
   ];
 
   constructor() { }
