@@ -40,10 +40,7 @@ export class AuthComponent {
         },
         errorMessage => {
           console.log(errorMessage);
-          switch(errorMessage.error.error.message){
-            case 'EMAIL_EXISTS':
-            this.error = 'The email already exists.';
-          }
+          this.error = errorMessage;
           this.isLoading = false;
         }
       );
