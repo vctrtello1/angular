@@ -7,16 +7,13 @@ import { AuthService } from './auth.service';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent {
 
   isLoginMode = true;
   isLoading = false;
   error: string = null;
 
   constructor(private authService: AuthService) { }
-
-  ngOnInit(): void {
-  }
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -32,21 +29,24 @@ export class AuthComponent implements OnInit {
     const password = form.value.password;
 
     this.isLoading = true;
-
-    if (this.isLoginMode){
-
+    if (this.isLoginMode) {
+      // ...
     }
-    else{
+     else {
       this.authService.signup(email, password).subscribe(
-      resData => {
-        console.log(resData);
-        this.isLoading = false;
-      }
-    ), error => {
-      console.log(error);
-      this.error = 'An error occured!';
-      this.isLoading = false;
-    };
+        resData => {
+          console.log(resData);
+          this.isLoading = false;
+        },
+        errorMessage => {
+          console.log(errorMessage);
+          switch(errorMessage.error.error.message){
+            case 'EMAIL_EXISTS':
+            this.error = 'The email already exists.';
+          }
+          this.isLoading = false;
+        }
+      );
     }
     form.reset();
   }
