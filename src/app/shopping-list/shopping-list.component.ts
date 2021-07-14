@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { LoggingService } from '../logging.service';
 
 import { ingredient } from '../shared/ingredient.model';
-import { ShoppingListService } from './shopping-list.service';
+import { StartEdit } from './store/shopping-list.actions';
 import { AppState } from './store/shopping-list.reducer';
 
 @Component({
@@ -15,8 +15,7 @@ import { AppState } from './store/shopping-list.reducer';
 export class ShoppingListComponent implements OnInit {
   ingredients: Observable< {ingredients: ingredient[]} >;
 
-  constructor(private shoppingListService: ShoppingListService,
-    private loggingService: LoggingService,
+  constructor(private loggingService: LoggingService,
     private store: Store<AppState>) { }
 
   ngOnInit() {
@@ -25,7 +24,7 @@ export class ShoppingListComponent implements OnInit {
   }
 
   onEditItem(index: number){
-    this.shoppingListService.startedEditing.next(index);
+    this.store.dispatch(new StartEdit(index));
   }
 
 }
