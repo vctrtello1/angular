@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 import { LoggingService } from '../logging.service';
 
 import { ingredient } from '../shared/ingredient.model';
+import { AppState } from '../store/app.reducer';
 import { StartEdit } from './store/shopping-list.actions';
-import { AppState } from './store/shopping-list.reducer';
 
 @Component({
   selector: 'app-shopping-list',
