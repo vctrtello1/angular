@@ -27,7 +27,7 @@ export class AuthEffects {
     ofType(LOGIN_START),
     switchMap((authData: LoginStart) => {
       return this.http.post<AuthResponseData>(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + environment.firebaseApiKey,
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + environment.firebaseApiKey,
         {
           email: authData.payload.email,
           password: authData.payload.password,
