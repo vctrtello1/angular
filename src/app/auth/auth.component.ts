@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { AlertComponent } from '../shared/alert/alert.component';
 import { PlaceholderDirective } from '../shared/placeholder.directive';
 import { AppState } from '../store/app.reducer';
-import { LoginStart, SignupStart } from './store/auth.actions';
+import { ClearError, LoginStart, SignupStart } from './store/auth.actions';
 
 @Component({
   selector: 'app-auth',
@@ -20,6 +20,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   @ViewChild(PlaceholderDirective, { static: false }) alertHost: PlaceholderDirective;
 
   private errorSubscription: Subscription;
+  private storeSubscription: Subscription;
 
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver,
@@ -56,7 +57,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   onHandleError() {
-    this.error = null;
+    this.store.dispatch(new ClearError());
   }
 
   private showErrorAlert(message: string) {
@@ -76,10 +77,13 @@ export class AuthComponent implements OnInit, OnDestroy {
       this.errorSubscription.unsubscribe();
     }
 
+    if(this.storeSubscription){
+      this.storeSubscription.unsubscribe();
+    }
   }
 
   ngOnInit() {
-    this.store.select('auth').subscribe(authState => {
+    this.storeSubscription = this.store.select('auth').subscribe(authState => {
       this.isLoading = authState.loading;
       this.error = authState.authError;
       if (this.error){

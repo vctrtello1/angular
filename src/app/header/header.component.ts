@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
+import { Logout } from '../auth/store/auth.actions';
 import { DataStorageService } from '../shared/data-storage.service';
 import { AppState } from '../store/app.reducer';
 
@@ -28,7 +29,7 @@ export class HeaderComponent implements OnInit, OnDestroy{
   }
 
   onLogout(){
-    this.authService.logout();
+    this.store.dispatch(new Logout());
   }
 
   ngOnInit() {

@@ -5,7 +5,8 @@ import { Actions, Effect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
 import { catchError, map, switchMap, tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
-import { AuthenticateFail, AuthenticateSuccess, AUTHENTICATE_SUCCESS, LoginStart, LOGIN_START, SignupStart, SIGNUP_START } from "./auth.actions";
+import { User } from "../user.model";
+import { AuthenticateFail, AuthenticateSuccess, AUTHENTICATE_SUCCESS, AUTO_LOGIN, LoginStart, LOGIN_START, LOGOUT, SignupStart, SIGNUP_START } from "./auth.actions";
 
 
 export interface AuthResponseData {
@@ -22,6 +23,8 @@ export interface AuthResponseData {
 const handleAuthentication = (expiresIn: number, email: string, userId: string,
   token: string) => {
   const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+  const user = new User(email, userId, token, expirationDate);
+  localStorage.setItem('userData', JSON.stringify(user));
   return new AuthenticateSuccess({
     email: email, userId: userId,
     token: token, expirationDate: expirationDate
@@ -111,11 +114,50 @@ export class AuthEffects {
       dispatch: false
     }
   )
-  authSuccess = this.actions$.pipe(
-    ofType(AUTHENTICATE_SUCCESS),
+  authRedirect = this.actions$.pipe(
+    ofType(AUTHENTICATE_SUCCESS, LOGOUT),
     tap(() => {
       this.router.navigate(['/']);
     })
+    );
+
+    @Effect({
+      dispatch: false
+    })
+    authLogout = this.actions$.pipe(
+      ofType(LOGOUT),
+      tap(() => {
+        localStorage.removeItem('userData');
+      })
+    );
+
+    @Effect()
+    autoLogin = this.actions$.pipe(
+      ofType(AUTO_LOGIN),
+      map(() => {
+        const userData: {
+          email: string, id: string,
+          _token: string, _tokenExpirationDate: string
+        } = JSON.parse(localStorage.getItem('userData'));
+        if (!userData) {
+          return {type: 'DUMMY'};
+        }
+
+        const loadedUser = new User(
+          userData.email, userData.id, userData._token,
+          new Date(userData._tokenExpirationDate)
+        );
+
+        if (loadedUser.token) {
+           return new AuthenticateSuccess({
+            email: loadedUser.email, userId: loadedUser.id,
+            token: loadedUser.token,
+            expirationDate: new Date(userData._tokenExpirationDate)
+          });
+        }
+        return { type: 'DUMMY' };
+      }
+      )
     );
 
   constructor(private actions$: Actions,
