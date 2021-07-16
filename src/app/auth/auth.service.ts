@@ -2,11 +2,11 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { Store } from "@ngrx/store";
-import { BehaviorSubject, throwError } from "rxjs";
+import { throwError } from "rxjs";
 import { catchError, tap } from 'rxjs/operators'
 import { environment } from "src/environments/environment";
 import { AppState } from "../store/app.reducer";
-import { Login, Logout } from "./store/auth.actions";
+import { AuthenticateSuccess, Logout } from "./store/auth.actions";
 import { User } from "./user.model";
 
 export interface AuthResponseData {
@@ -97,7 +97,7 @@ export class AuthService {
       email, userId,
       token, expirationDate
     );
-    this.store.dispatch(new Login({
+    this.store.dispatch(new AuthenticateSuccess({
       email: email, userId: userId,
       token:token,
       expirationDate: new Date(expirationDate)
@@ -132,7 +132,7 @@ export class AuthService {
     );
 
     if (loadedUser.token) {
-      this.store.dispatch(new Login({
+      this.store.dispatch(new AuthenticateSuccess({
         email: loadedUser.email, userId: loadedUser.id,
         token: loadedUser.token,
         expirationDate: new Date(userData._tokenExpirationDate)
