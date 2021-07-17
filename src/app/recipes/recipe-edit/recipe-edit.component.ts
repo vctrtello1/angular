@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AppState } from 'src/app/store/app.reducer';
-import { RecipeService } from '../recipe.service';
 import { addRecipe, updateRecipe } from '../store/recipe.actions';
 
 @Component({
@@ -12,13 +12,14 @@ import { addRecipe, updateRecipe } from '../store/recipe.actions';
   templateUrl: './recipe-edit.component.html',
   styleUrls: ['./recipe-edit.component.css']
 })
-export class RecipeEditComponent implements OnInit {
+export class RecipeEditComponent implements OnInit, OnDestroy {
   id: number;
   editMode = false;
   recipeForm: FormGroup;
 
+  private storeSubscription: Subscription;
+
   constructor(private route: ActivatedRoute,
-    private recipeService: RecipeService,
     private router: Router,
     private store: Store<AppState>) { }
 
@@ -39,7 +40,7 @@ export class RecipeEditComponent implements OnInit {
     let recipeIngredients = new FormArray([]);
 
     if (this.editMode) {
-      this.store
+      this.storeSubscription = this.store
         .select('recipes')
         .pipe(
           map(recipeState => {
@@ -106,5 +107,11 @@ export class RecipeEditComponent implements OnInit {
 
   onDeleteIngredient(index: number) {
     (<FormArray>this.recipeForm.get('ingredients')).removeAt(index);
+  }
+
+  ngOnDestroy(){
+    if(this.storeSubscription) {
+      this.storeSubscription.unsubscribe();
+    }
   }
 }

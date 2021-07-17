@@ -16,9 +16,9 @@ import { fetchRecipes, SET_RECIPES } from "./store/recipe.actions";
 export class RecipesResolverService implements Resolve<Recipe[]> {
 
   constructor(private store: Store<AppState>,
-    private actions$: Actions){}
+    private actions$: Actions) { }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot){
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
     return this.store.select('recipes').pipe(
       take(1),
@@ -28,10 +28,13 @@ export class RecipesResolverService implements Resolve<Recipe[]> {
       switchMap(recipes => {
         if (recipes.length === 0) {
           this.store.dispatch(new fetchRecipes());
-          return this.actions$.pipe(ofType(SET_RECIPES), take(1));
+          return this.actions$.pipe(
+            ofType(SET_RECIPES),
+            take(1)
+          );
         }
         else {
-          of(recipes);
+          return of(recipes);
         }
       })
     );
