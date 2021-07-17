@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
 import { AppState } from 'src/app/store/app.reducer';
 import { RecipeService } from '../recipe.service';
+import { addRecipe, updateRecipe } from '../store/recipe.actions';
 
 @Component({
   selector: 'app-recipe-edit',
@@ -21,7 +22,7 @@ export class RecipeEditComponent implements OnInit {
     private router: Router,
     private store: Store<AppState>) { }
 
-  ngOnInit(){
+  ngOnInit() {
     this.route.params.subscribe(
       (params: Params) => {
         this.id = +params['id'];
@@ -37,7 +38,7 @@ export class RecipeEditComponent implements OnInit {
     let recipeDescription = '';
     let recipeIngredients = new FormArray([]);
 
-    if(this.editMode) {
+    if (this.editMode) {
       this.store
         .select('recipes')
         .pipe(
@@ -75,11 +76,11 @@ export class RecipeEditComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.editMode){
-      this.recipeService.updateRecipe(this.id, this.recipeForm.value);
+    if (this.editMode) {
+      this.store.dispatch(new updateRecipe({ index: this.id, newRecipe: this.recipeForm.value }));
     }
-    else{
-      this.recipeService.addRecipe(this.recipeForm.value);
+    else {
+      this.store.dispatch(new addRecipe(this.recipeForm.value))
     }
     this.onCancel();
   }
@@ -88,19 +89,19 @@ export class RecipeEditComponent implements OnInit {
     return (<FormArray>this.recipeForm.get('ingredients')).controls;
   }
 
-  onAddingredient(){
+  onAddingredient() {
     (<FormArray>this.recipeForm.get('ingredients')).push(
       new FormGroup({
         'name': new FormControl(null, Validators.required),
         'amount': new FormControl(null, [
-                  Validators.required, Validators.pattern('[1-9]+[0=9]*$')
-                ])
+          Validators.required, Validators.pattern('[1-9]+[0=9]*$')
+        ])
       })
     );
   }
 
-  onCancel(){
-    this.router.navigate(['../'], {relativeTo: this.route});
+  onCancel() {
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   onDeleteIngredient(index: number) {

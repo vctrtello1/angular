@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Actions, Effect, ofType } from "@ngrx/effects";
 import { switchMap, map } from "rxjs/operators";
 import { Recipe } from "../recipe.model";
-import { FETCH_RECIPES, SetRecipes } from "./recipe.actions";
+import { FETCH_RECIPES, setRecipes } from "./recipe.actions";
 
 @Injectable()
 export class RecipeEffects {
@@ -25,7 +25,7 @@ export class RecipeEffects {
       });
     }),
     map(recipes => {
-      return new SetRecipes(recipes);
+      return new setRecipes(recipes);
     })
   );
 
