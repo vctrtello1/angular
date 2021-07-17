@@ -14,7 +14,8 @@ export class AuthenticateSuccess implements Action {
 
   constructor( public payload: {
     email: string, userId: string,
-    token: string, expirationDate: Date
+    token: string, expirationDate: Date,
+    redirect: boolean
   }) {
 
   }
